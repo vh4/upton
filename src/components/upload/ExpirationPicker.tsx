@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ExpirationOption, ExpirationPreset, CustomExpirationUnit } from '@/types/file';
-import { Clock, Infinity as InfinityIcon } from 'lucide-react';
+import { Clock, Infinity as InfinityIcon, AlertTriangle } from 'lucide-react';
 
 interface ExpirationPickerProps {
   value: ExpirationOption;
@@ -113,6 +113,21 @@ export function ExpirationPicker({ value, onChange }: ExpirationPickerProps) {
           </select>
         </div>
       )}
+      {/* Permanent File & Storage Limit Notice */}
+      {value.preset === 'permanent' && (
+        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 animate-in fade-in duration-200">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <span className="font-bold text-amber-800 dark:text-amber-300">Catatan Penting:</span> File berstatus <strong className="underline">Permanent</strong> akan tetap terhapus jika admin melakukan <strong>reset storage</strong>. Kapasitas maksimum storage saat ini adalah <strong>1 GB</strong> dan sistem akan <strong>otomatis me-reset (clean) storage jika penuh</strong>.
+          </div>
+        </div>
+      )}
+
+      {/* General Storage Capacity Indicator Info */}
+      <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1 border-t border-zinc-200/60 dark:border-zinc-800/60">
+        <span>Kapasitas Storage: <strong className="text-zinc-700 dark:text-zinc-300">1 GB Max</strong> (Auto-reset saat penuh)</span>
+        <span className="hidden sm:inline">Admin dapat mereset storage sewaktu-waktu</span>
+      </div>
     </div>
   );
 }

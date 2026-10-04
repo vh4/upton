@@ -289,3 +289,75 @@ export async function getSupabaseFileUrl(
 
   return signedData?.signedUrl || null;
 }
+
+/**
+ * Deletes a batch of files from Supabase Storage bucket.
+ */
+export async function deleteSupabaseFilesBatch(paths: string[]): Promise<number> {
+  const client = getSupabaseStorageClient();
+  if (!client || paths.length === 0) return 0;
+
+  const bucket = getStorageBucketName();
+  const keys = paths.map((p) => parseStoragePath(p).key);
+
+  let deletedCount = 0;
+  for (let i = 0; i < keys.length; i += 100) {
+    const chunk = keys.slice(i, i + 100);
+    try {
+      const { error } = await client.storage.from(bucket).remove(chunk);
+      if (!error) {
+        deletedCount += chunk.length;
+      }
+    } catch (err) {
+      console.warn('[storage:supabase] Error in batch delete:', err);
+    }
+  }
+
+  return deletedCount;
+}
+
+/**
+ * Completely empties all objects in the Supabase Storage bucket recursively.
+ */
+export async function emptySupabaseBucket(): Promise<number> {
+  const client = getSupabaseStorageClient();
+  if (!client) return 0;
+
+  const supabase = client;
+  const bucket = getStorageBucketName();
+  let totalDeleted = 0;
+
+  async function cleanFolder(folder: string = ''): Promise<void> {
+    const { data: list, error } = await supabase.storage
+      .from(bucket)
+      .list(folder, { limit: 100 });
+
+    if (error || !list || list.length === 0) return;
+
+    const filesToDelete: string[] = [];
+    for (const item of list) {
+      const fullPath = folder ? `${folder}/${item.name}` : item.name;
+      if (!item.id && !item.metadata) {
+        // Subfolder
+        await cleanFolder(fullPath);
+      } else {
+        filesToDelete.push(fullPath);
+      }
+    }
+
+    if (filesToDelete.length > 0) {
+      const { error: delErr } = await supabase.storage.from(bucket).remove(filesToDelete);
+      if (!delErr) {
+        totalDeleted += filesToDelete.length;
+      }
+    }
+  }
+
+  try {
+    await cleanFolder('');
+  } catch (err) {
+    console.warn('[storage:supabase] Error emptying bucket:', err);
+  }
+
+  return totalDeleted;
+}

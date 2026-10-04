@@ -6,7 +6,8 @@ import {
   isSupabaseStorageEnabled,
   getStorageBucketName,
   getSupabaseStorageClient,
-} from '@/lib/storage/supabase';
+  autoResetStorageIfExceeded,
+} from '@/lib/storage';
 import { generateStoredFilename } from '@/lib/storage/local';
 import { ExpirationPreset, CustomExpirationUnit } from '@/types/file';
 
@@ -39,6 +40,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Check 1GB storage limit and auto-reset if full
+    await autoResetStorageIfExceeded(fileSize);
 
     // If local storage mode, notify frontend to use multipart upload to /api/upload
     if (!isSupabaseStorageEnabled()) {

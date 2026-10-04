@@ -153,3 +153,36 @@ export function createPhysicalFileStream(
 
   return createReadStream(fullPath, options);
 }
+
+/**
+ * Removes all uploaded files inside the base upload directory.
+ * Preserves .gitkeep files.
+ */
+export async function resetLocalStorageDir(): Promise<number> {
+  const baseDir = getUploadBaseDir();
+  let deletedCount = 0;
+  if (!existsSync(baseDir)) return 0;
+
+  async function cleanDir(currentDir: string) {
+    try {
+      const entries = await fs.readdir(currentDir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry.name);
+        if (entry.isDirectory()) {
+          await cleanDir(fullPath);
+          try {
+            await fs.rmdir(fullPath);
+          } catch {}
+        } else if (entry.name !== '.gitkeep') {
+          await fs.unlink(fullPath);
+          deletedCount++;
+        }
+      }
+    } catch (err) {
+      console.warn('[storage:local] Error cleaning directory:', currentDir, err);
+    }
+  }
+
+  await cleanDir(baseDir);
+  return deletedCount;
+}

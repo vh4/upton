@@ -404,7 +404,7 @@ export function Dropzone() {
         </div>
 
         <p className="text-[11px] text-zinc-500 mt-3">
-          Maximum file size: {maxMb} MB &middot; Multiple files supported
+          Maksimum file: {maxMb} MB &middot; Kapasitas storage: 1 GB (Auto-reset saat penuh)
         </p>
       </div>
 

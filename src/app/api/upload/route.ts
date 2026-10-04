@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { validateUploadedFile } from '@/lib/validation/mime';
-import { saveFile } from '@/lib/storage';
+import { saveFile, autoResetStorageIfExceeded } from '@/lib/storage';
 import { calculateExpirationDate } from '@/lib/expiration/calc';
 import { insertFileRecord, toPublicFile } from '@/lib/db';
 import { ExpirationPreset, CustomExpirationUnit, UploadedFileResponse } from '@/types/file';
@@ -51,6 +51,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Check storage limits and trigger auto-reset if full
+    const totalIncomingBytes = files.reduce((acc, f) => acc + f.size, 0);
+    await autoResetStorageIfExceeded(totalIncomingBytes);
 
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ||

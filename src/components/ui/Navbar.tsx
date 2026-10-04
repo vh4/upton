@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github } from 'lucide-react';
+import { Github, Shield } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 
@@ -12,25 +12,28 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 bg-white/80 dark:border-zinc-800/80 dark:bg-zinc-950/70 backdrop-blur-md transition-colors duration-150">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <Logo size={34} className="group-hover:scale-105 transition-transform drop-shadow-sm" />
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
+          <Logo
+            size={30}
+            className="sm:w-[34px] sm:h-[34px] group-hover:scale-105 transition-transform drop-shadow-sm shrink-0"
+          />
           <div className="flex flex-col">
-            <span className="font-extrabold tracking-wider text-base text-zinc-900 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
+            <span className="font-extrabold tracking-wider text-sm sm:text-base text-zinc-900 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors leading-tight">
               UP-TON
             </span>
-            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono -mt-1">
+            <span className="text-[9px] text-zinc-500 uppercase tracking-widest font-mono -mt-0.5 hidden xs:block">
               File Share
             </span>
           </div>
         </Link>
 
         {/* Navigation Links */}
-        <nav className="flex items-center gap-1 sm:gap-2">
+        <nav className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <Link
             href="/"
-            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+            className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               pathname === '/'
                 ? 'bg-zinc-200/80 text-zinc-900 dark:bg-zinc-800/80 dark:text-white font-semibold'
                 : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40'
@@ -41,7 +44,7 @@ export function Navbar() {
 
           <Link
             href="/dashboard"
-            className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+            className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               pathname === '/dashboard'
                 ? 'bg-zinc-200/80 text-zinc-900 dark:bg-zinc-800/80 dark:text-white font-semibold'
                 : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40'
@@ -50,18 +53,31 @@ export function Navbar() {
             Dashboard
           </Link>
 
-          <div className="h-4 w-[1px] bg-zinc-300 dark:bg-zinc-800 mx-1 sm:mx-2" />
+          <Link
+            href="/reset"
+            className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${
+              pathname === '/reset'
+                ? 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 font-semibold border border-rose-500/30'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40'
+            }`}
+            title="Admin Storage Reset"
+          >
+            <Shield className="w-3.5 h-3.5 text-rose-500" />
+            <span>Reset</span>
+          </Link>
+
+          <div className="h-4 w-[1px] bg-zinc-300 dark:bg-zinc-800 mx-0.5 sm:mx-1 shrink-0" />
 
           {/* Theme Switcher */}
           <ThemeToggle />
 
-          {/* GitHub Repo */}
+          {/* GitHub Repo (visible on tablet/desktop to save mobile navbar space) */}
           <a
             href="https://github.com/vh4/upton"
             target="_blank"
             rel="noopener noreferrer"
             title="GitHub Repository"
-            className="p-2 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40 transition-colors"
+            className="hidden sm:inline-flex p-1.5 sm:p-2 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40 transition-colors shrink-0"
           >
             <Github className="w-4 h-4" />
           </a>

@@ -390,3 +390,129 @@ export function toPublicFile(record: FileRecord): PublicFileRecord {
     download_url: `/api/files/${record.id}/download`,
   };
 }
+
+export interface StorageMetrics {
+  totalFiles: number;
+  activeFiles: number;
+  expiredFiles: number;
+  permanentFiles: number;
+  imageFiles: number;
+  videoFiles: number;
+  totalBytes: number;
+  maxBytes: number;
+  usedPercent: number;
+  isFull: boolean;
+}
+
+/**
+ * Retrieves all files ordered by creation date descending.
+ */
+export async function getAllFiles(): Promise<FileRecord[]> {
+  const pool = getPgPool();
+  if (pool) {
+    try {
+      const res = await pool.query<FileRecord>(
+        'SELECT * FROM files ORDER BY created_at DESC'
+      );
+      return res.rows;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL getAllFiles failed, falling back to Supabase:', pgError?.message);
+    }
+  }
+
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('files')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      return data as FileRecord[];
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Computes live storage metrics across all files.
+ */
+export async function getStorageMetrics(maxBytes: number = 1024 * 1024 * 1024): Promise<StorageMetrics> {
+  const all = await getAllFiles();
+  const nowTime = Date.now();
+
+  let totalBytes = 0;
+  let activeFiles = 0;
+  let expiredFiles = 0;
+  let permanentFiles = 0;
+  let imageFiles = 0;
+  let videoFiles = 0;
+
+  for (const f of all) {
+    const size = Number(f.file_size) || 0;
+    totalBytes += size;
+
+    const isExpired = f.expires_at ? new Date(f.expires_at).getTime() < nowTime : false;
+    if (isExpired) {
+      expiredFiles++;
+    } else {
+      activeFiles++;
+    }
+
+    if (!f.expires_at) {
+      permanentFiles++;
+    }
+
+    if (f.mime_type.startsWith('image/')) {
+      imageFiles++;
+    } else if (f.mime_type.startsWith('video/')) {
+      videoFiles++;
+    }
+  }
+
+  const usedPercent = maxBytes > 0 ? Math.min(100, Math.round((totalBytes / maxBytes) * 1000) / 10) : 0;
+
+  return {
+    totalFiles: all.length,
+    activeFiles,
+    expiredFiles,
+    permanentFiles,
+    imageFiles,
+    videoFiles,
+    totalBytes,
+    maxBytes,
+    usedPercent,
+    isFull: totalBytes >= maxBytes,
+  };
+}
+
+/**
+ * Deletes all file records from database permanently.
+ */
+export async function deleteAllFileRecords(): Promise<number> {
+  const pool = getPgPool();
+  if (pool) {
+    try {
+      const res = await pool.query('DELETE FROM files');
+      return res.rowCount ?? 0;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL deleteAllFileRecords failed, falling back to Supabase:', pgError?.message);
+    }
+  }
+
+  const supabase = getSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('files')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000')
+      .select('id');
+
+    if (!error && data) {
+      return data.length;
+    }
+  }
+
+  return 0;
+}
