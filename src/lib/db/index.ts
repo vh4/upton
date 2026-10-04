@@ -9,6 +9,14 @@ export function getPgPool(): Pool | null {
   const connString = process.env.DATABASE_URL;
   if (!connString) return null;
 
+  // On Vercel or cloud serverless, do not attempt to connect to localhost/127.0.0.1
+  if (
+    (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) &&
+    (connString.includes('localhost') || connString.includes('127.0.0.1'))
+  ) {
+    return null;
+  }
+
   if (!pgPool) {
     pgPool = new Pool({
       connectionString: connString,
@@ -160,11 +168,15 @@ export async function getFileById(id: string): Promise<FileRecord | null> {
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query<FileRecord>(
-      'SELECT * FROM files WHERE id = $1 LIMIT 1',
-      [id]
-    );
-    return res.rows[0] || null;
+    try {
+      const res = await pool.query<FileRecord>(
+        'SELECT * FROM files WHERE id = $1 LIMIT 1',
+        [id]
+      );
+      return res.rows[0] || null;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL getFileById failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
@@ -189,11 +201,15 @@ export async function getFilesByIds(ids: string[]): Promise<FileRecord[]> {
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query<FileRecord>(
-      'SELECT * FROM files WHERE id = ANY($1::uuid[]) ORDER BY created_at DESC',
-      [ids]
-    );
-    return res.rows;
+    try {
+      const res = await pool.query<FileRecord>(
+        'SELECT * FROM files WHERE id = ANY($1::uuid[]) ORDER BY created_at DESC',
+        [ids]
+      );
+      return res.rows;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL getFilesByIds failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
@@ -217,11 +233,15 @@ export async function incrementDownloadCount(id: string): Promise<number> {
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query<{ download_count: number }>(
-      'UPDATE files SET download_count = download_count + 1 WHERE id = $1 RETURNING download_count',
-      [id]
-    );
-    return res.rows[0]?.download_count ?? 0;
+    try {
+      const res = await pool.query<{ download_count: number }>(
+        'UPDATE files SET download_count = download_count + 1 WHERE id = $1 RETURNING download_count',
+        [id]
+      );
+      return res.rows[0]?.download_count ?? 0;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL incrementDownloadCount failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
@@ -258,11 +278,15 @@ export async function deleteFileRecord(id: string, deleteToken: string): Promise
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query(
-      "DELETE FROM files WHERE id = $1 AND delete_token = $2",
-      [id, deleteToken]
-    );
-    return (res.rowCount ?? 0) > 0;
+    try {
+      const res = await pool.query(
+        "DELETE FROM files WHERE id = $1 AND delete_token = $2",
+        [id, deleteToken]
+      );
+      return (res.rowCount ?? 0) > 0;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL deleteFileRecord failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
@@ -286,10 +310,14 @@ export async function getExpiredFiles(): Promise<FileRecord[]> {
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query<FileRecord>(
-      "SELECT * FROM files WHERE expires_at IS NOT NULL AND expires_at < NOW() AND status = 'active'"
-    );
-    return res.rows;
+    try {
+      const res = await pool.query<FileRecord>(
+        "SELECT * FROM files WHERE expires_at IS NOT NULL AND expires_at < NOW() AND status = 'active'"
+      );
+      return res.rows;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL getExpiredFiles failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
@@ -316,11 +344,15 @@ export async function deleteExpiredRecords(ids: string[]): Promise<number> {
   const pool = getPgPool();
 
   if (pool) {
-    const res = await pool.query(
-      'DELETE FROM files WHERE id = ANY($1::uuid[])',
-      [ids]
-    );
-    return res.rowCount ?? 0;
+    try {
+      const res = await pool.query(
+        'DELETE FROM files WHERE id = ANY($1::uuid[])',
+        [ids]
+      );
+      return res.rowCount ?? 0;
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL deleteExpiredRecords failed, falling back to Supabase:', pgError?.message);
+    }
   }
 
   const supabase = getSupabase();
