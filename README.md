@@ -63,24 +63,17 @@ User Browser
 
 ---
 
-## ⚠️ Important Storage Architecture Notice
+## ⚡ Hybrid Storage Architecture (Local & Supabase Storage)
 
-Upton stores uploaded binary files in the **local filesystem** inside:
+Upton features an intelligent **Hybrid Storage Architecture**:
 
-```text
-/file/
-  2026/
-    10/
-      1790406699_abc123456789.png
-```
-
-### Deployment Considerations:
-
-1. **Local Development, Dedicated Servers & VPS**:
-   - Ideal for standard servers (Ubuntu/Debian VPS, Docker with persistent volumes, AWS EC2, DigitalOcean Droplets) where `./file` is a persistent volume.
-2. **Serverless Platforms (e.g., Vercel, AWS Lambda)**:
-   - Serverless environments use **ephemeral filesystems** (`/tmp`), meaning local files do not persist permanently across function re-invocations.
-   - For production serverless deployments requiring long-term persistence, attach a mounted persistent volume or persistent block storage.
+1. **Local Development (Laptop / VPS / Docker)**:
+   - Files are stored in the local persistent folder `./file/` organized by date partitions (`/file/YYYY/MM/filename.ext`).
+   - Fast, offline, and zero cloud bandwidth usage.
+2. **Serverless Production (Vercel / Cloud)**:
+   - On Vercel, Upton automatically detects the serverless environment and saves files to the **Supabase Storage Bucket** (`upton-files`).
+   - Image previews and video streaming are served with fast edge caching and HTTP Range support directly via Supabase CDN, preventing ephemeral container data loss ("Missing Physical File").
+   - You can also force a storage driver anytime using `STORAGE_DRIVER=supabase` or `STORAGE_DRIVER=local`.
 
 ---
 

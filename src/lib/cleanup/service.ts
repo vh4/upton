@@ -1,5 +1,5 @@
 import { getExpiredFiles, deleteExpiredRecords } from '@/lib/db';
-import { deleteLocalFile } from '@/lib/storage/local';
+import { deleteFile } from '@/lib/storage';
 
 export interface CleanupResult {
   totalExpired: number;
@@ -39,8 +39,8 @@ export async function cleanupExpiredFiles(): Promise<CleanupResult> {
 
     for (const item of expiredList) {
       try {
-        // Physical removal
-        const deleted = await deleteLocalFile(item.file_path);
+        // Physical removal (local or Supabase Storage)
+        const deleted = await deleteFile(item.file_path);
         if (deleted) {
           result.filesDeleted++;
         }

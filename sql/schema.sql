@@ -52,3 +52,44 @@ CREATE POLICY "Allow public delete on files"
   ON public.files FOR DELETE 
   USING (true);
 
+-- ==============================================================================
+-- Supabase Storage: Bucket 'upton-files' and Storage Policies
+-- (Run this in Supabase SQL Editor if deploying to Vercel with Supabase Storage)
+-- ==============================================================================
+
+-- 1. Create 'upton-files' bucket if it doesn't already exist
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'upton-files',
+  'upton-files',
+  true,
+  524288000, -- 500 MB
+  NULL
+)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 2. Drop any previous conflicting policies on 'upton-files'
+DROP POLICY IF EXISTS "Public Select upton-files" ON storage.objects;
+DROP POLICY IF EXISTS "Public Insert upton-files" ON storage.objects;
+DROP POLICY IF EXISTS "Public Update upton-files" ON storage.objects;
+DROP POLICY IF EXISTS "Public Delete upton-files" ON storage.objects;
+
+-- 3. Allow public/anon read access for uploaded files
+CREATE POLICY "Public Select upton-files"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'upton-files');
+
+-- 4. Allow public/anon file uploads
+CREATE POLICY "Public Insert upton-files"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'upton-files');
+
+-- 5. Allow update
+CREATE POLICY "Public Update upton-files"
+  ON storage.objects FOR UPDATE
+  USING (bucket_id = 'upton-files');
+
+-- 6. Allow file deletion (via delete token or cleanup cron)
+CREATE POLICY "Public Delete upton-files"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'upton-files');

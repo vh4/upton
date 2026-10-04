@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { validateUploadedFile } from '@/lib/validation/mime';
-import { saveLocalFile } from '@/lib/storage/local';
+import { saveFile } from '@/lib/storage';
 import { calculateExpirationDate } from '@/lib/expiration/calc';
 import { insertFileRecord, toPublicFile } from '@/lib/db';
 import { ExpirationPreset, CustomExpirationUnit, UploadedFileResponse } from '@/types/file';
@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      // Save to local filesystem in date partition
-      const saved = await saveLocalFile(buffer, validation.ext);
+      // Save to storage (local disk or Supabase bucket based on environment)
+      const saved = await saveFile(buffer, validation.ext, file.type);
 
       // Generate secure delete token
       const deleteToken = crypto.randomBytes(24).toString('hex');

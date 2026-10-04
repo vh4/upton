@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFileById, deleteFileRecord, toPublicFile } from '@/lib/db';
-import { deleteLocalFile, getPhysicalFileStat } from '@/lib/storage/local';
+import { deleteFile, getFileStat } from '@/lib/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const isExpired = new Date(record.expires_at).getTime() < Date.now();
       if (isExpired) {
         // Asynchronously cleanup expired file
-        deleteLocalFile(record.file_path).catch(() => {});
+        deleteFile(record.file_path).catch(() => {});
         return NextResponse.json(
           {
             error: 'This file has expired.',
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    // Verify physical file exists
-    const fileStat = await getPhysicalFileStat(record.file_path);
+    // Verify file exists on storage (local or Supabase)
+    const fileStat = await getFileStat(record.file_path);
     if (!fileStat) {
       return NextResponse.json(
         { error: 'The requested file could not be found on storage.' },
@@ -101,8 +101,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Delete physical file
-    await deleteLocalFile(record.file_path);
+    // Delete file from storage (Supabase or local disk)
+    await deleteFile(record.file_path);
 
     // Delete from database
     await deleteFileRecord(record.id, token);

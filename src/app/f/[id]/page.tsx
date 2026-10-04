@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getFileById, toPublicFile } from '@/lib/db';
-import { getPhysicalFileStat } from '@/lib/storage/local';
+import { getFileStat } from '@/lib/storage';
 import { ImageViewer } from '@/components/file/ImageViewer';
 import { VideoPlayer } from '@/components/file/VideoPlayer';
 import { FileMetaCard } from '@/components/file/FileMetaCard';
@@ -89,8 +89,8 @@ export default async function FileViewPage({ params }: PageProps) {
     );
   }
 
-  // Check storage file
-  const stat = await getPhysicalFileStat(record.file_path);
+  // Check storage file (local disk or Supabase bucket)
+  const stat = await getFileStat(record.file_path);
   if (!stat) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -101,7 +101,7 @@ export default async function FileViewPage({ params }: PageProps) {
           Missing Physical File
         </h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-sm mt-2">
-          The metadata exists, but the file is no longer on disk. It may have been cleaned up or moved.
+          The metadata exists, but the file is no longer on storage. It may have been cleaned up or moved.
         </p>
         <Link
           href="/"
