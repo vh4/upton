@@ -87,27 +87,34 @@ export async function insertFileRecord(
     : record.public_url;
 
   if (pool) {
-    const res = await pool.query<FileRecord>(
-      `INSERT INTO files (
-        id, original_name, stored_name, mime_type, file_size, file_path, public_url, expires_at, delete_token, status, width, height, duration
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', $10, $11, $12)
-      RETURNING *`,
-      [
-        fileId,
-        record.original_name,
-        record.stored_name,
-        record.mime_type,
-        record.file_size,
-        record.file_path,
-        publicUrl,
-        record.expires_at,
-        record.delete_token,
-        record.width,
-        record.height,
-        record.duration,
-      ]
-    );
-    return res.rows[0];
+    try {
+      const res = await pool.query<FileRecord>(
+        `INSERT INTO files (
+          id, original_name, stored_name, mime_type, file_size, file_path, public_url, expires_at, delete_token, status, width, height, duration
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', $10, $11, $12)
+        RETURNING *`,
+        [
+          fileId,
+          record.original_name,
+          record.stored_name,
+          record.mime_type,
+          record.file_size,
+          record.file_path,
+          publicUrl,
+          record.expires_at,
+          record.delete_token,
+          record.width,
+          record.height,
+          record.duration,
+        ]
+      );
+      return res.rows[0];
+    } catch (pgError: any) {
+      console.warn('[db] Direct PostgreSQL insert failed, attempting Supabase fallback:', pgError?.message);
+      if (!getSupabase()) {
+        throw pgError;
+      }
+    }
   }
 
   const supabase = getSupabase();
@@ -133,6 +140,11 @@ export async function insertFileRecord(
       .single();
 
     if (error || !data) {
+      if (error?.message?.includes("Could not find the table 'public.files'")) {
+        throw new Error(
+          "Tabel 'files' belum dibuat di Supabase PostgreSQL. Silakan jalankan script SQL dari sql/schema.sql di Supabase SQL Editor Anda."
+        );
+      }
       throw new Error(`Failed to insert into Supabase: ${error?.message || 'Unknown error'}`);
     }
     return data as FileRecord;
@@ -214,8 +226,26 @@ export async function incrementDownloadCount(id: string): Promise<number> {
 
   const supabase = getSupabase();
   if (supabase) {
-    const { data } = await supabase.rpc('increment_download_count', { file_id: id });
-    return Number(data) || 0;
+    try {
+      const { data, error } = await supabase.rpc('increment_download_count', { file_id: id });
+      if (!error && data !== null) {
+        return Number(data) || 0;
+      }
+    } catch {
+      // RPC not defined, fallback to select + update
+    }
+
+    const { data: current } = await supabase
+      .from('files')
+      .select('download_count')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (current) {
+      const nextCount = (Number(current.download_count) || 0) + 1;
+      await supabase.from('files').update({ download_count: nextCount }).eq('id', id);
+      return nextCount;
+    }
   }
 
   return 0;

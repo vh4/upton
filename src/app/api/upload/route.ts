@@ -136,7 +136,10 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('[upload] Unexpected upload error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred while processing the upload.' },
+      {
+        error: error?.message || 'An unexpected error occurred while processing the upload.',
+        details: error?.message || String(error),
+      },
       { status: 500 }
     );
   }
