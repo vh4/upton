@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
 
       // Insert record to database
       const record = await insertFileRecord({
+        id: fileId,
         original_name: validation.sanitizedName,
         stored_name: saved.storedName,
         mime_type: file.type.toLowerCase(),

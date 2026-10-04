@@ -78,23 +78,28 @@ export async function ensureDbSchema(): Promise<void> {
  * Inserts a new file metadata record into the database.
  */
 export async function insertFileRecord(
-  record: Omit<FileRecord, 'id' | 'created_at' | 'download_count' | 'status'>
+  record: Omit<FileRecord, 'id' | 'created_at' | 'download_count' | 'status'> & { id?: string }
 ): Promise<FileRecord> {
   const pool = getPgPool();
+  const fileId = record.id || crypto.randomUUID();
+  const publicUrl = record.public_url.includes('/f/')
+    ? record.public_url.replace(/\/f\/[^/]+$/, `/f/${fileId}`)
+    : record.public_url;
 
   if (pool) {
     const res = await pool.query<FileRecord>(
       `INSERT INTO files (
-        original_name, stored_name, mime_type, file_size, file_path, public_url, expires_at, delete_token, status, width, height, duration
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'active', $9, $10, $11)
+        id, original_name, stored_name, mime_type, file_size, file_path, public_url, expires_at, delete_token, status, width, height, duration
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', $10, $11, $12)
       RETURNING *`,
       [
+        fileId,
         record.original_name,
         record.stored_name,
         record.mime_type,
         record.file_size,
         record.file_path,
-        record.public_url,
+        publicUrl,
         record.expires_at,
         record.delete_token,
         record.width,
@@ -110,12 +115,13 @@ export async function insertFileRecord(
     const { data, error } = await supabase
       .from('files')
       .insert({
+        id: fileId,
         original_name: record.original_name,
         stored_name: record.stored_name,
         mime_type: record.mime_type,
         file_size: record.file_size,
         file_path: record.file_path,
-        public_url: record.public_url,
+        public_url: publicUrl,
         expires_at: record.expires_at,
         delete_token: record.delete_token,
         status: 'active',
