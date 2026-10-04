@@ -16,18 +16,18 @@ import { executeStorageReset } from '../src/lib/storage/reset';
 test('Admin Auth — Credential & Session Token Verification', () => {
   const creds = getAdminCredentials();
   assert.equal(creds.username, 'tony');
-  assert.equal(creds.password, 'wirsumatmo123');
+  assert.equal(creds.password, 'Upton@2026');
 
   // 1. Password hashing
-  const hash1 = hashPassword('wirsumatmo123');
-  const hash2 = hashPassword('wirsumatmo123');
+  const hash1 = hashPassword('Upton@2026');
+  const hash2 = hashPassword('Upton@2026');
   assert.equal(hash1, hash2);
-  assert.notEqual(hash1, 'wirsumatmo123');
+  assert.notEqual(hash1, 'Upton@2026');
 
   // 2. Credential verification (timing-safe & hashed)
-  assert.equal(verifyAdminCredentials('tony', 'wirsumatmo123'), true);
+  assert.equal(verifyAdminCredentials('tony', 'Upton@2026'), true);
   assert.equal(verifyAdminCredentials('tony', 'wrongpassword'), false);
-  assert.equal(verifyAdminCredentials('hacker', 'wirsumatmo123'), false);
+  assert.equal(verifyAdminCredentials('hacker', 'Upton@2026'), false);
 
   // 3. AES-256-GCM encrypted token
   const token = createAdminToken('tony');

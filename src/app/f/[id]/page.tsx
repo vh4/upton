@@ -117,7 +117,7 @@ export default async function FileViewPage({ params }: PageProps) {
   const publicFile = toPublicFile(record);
 
   return (
-    <div className="max-w-4xl mx-auto w-full px-4 py-8 sm:py-12 space-y-6">
+    <div className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-6 sm:py-12 space-y-4 sm:space-y-6">
       {/* Back button */}
       <Link
         href="/"

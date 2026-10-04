@@ -3,32 +3,32 @@ import { Clock, ShieldCheck, Zap, Sparkles } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:py-16">
+    <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-16">
       {/* Hero Section */}
-      <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-200/70 border border-zinc-300/80 text-xs font-medium text-zinc-800 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 shadow-sm mb-2">
+      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10 space-y-2.5 sm:space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-200/70 border border-zinc-300/80 text-xs font-medium text-zinc-800 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 shadow-sm mb-1 sm:mb-2">
           <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
           <span>Upload. Share. Done.</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100 leading-tight">
           Simple, fast file sharing.
         </h1>
 
-        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-lg mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm md:text-base text-zinc-600 dark:text-zinc-400 max-w-lg mx-auto leading-relaxed px-2">
           Upload images and videos. Share them instantly with a unique URL.
           Choose exactly when they disappear.
         </p>
       </div>
 
       {/* Main Upload Dropzone Card */}
-      <section className="w-full max-w-2xl mx-auto mb-16">
+      <section className="w-full max-w-2xl mx-auto mb-10 sm:mb-16">
         <Dropzone />
       </section>
 
       {/* Feature Highlights Grid */}
-      <div className="max-w-5xl mx-auto w-full grid grid-cols-1 sm:grid-cols-3 gap-5 pt-8 border-t border-zinc-200/80 dark:border-zinc-800/60">
-        <div className="p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
+      <div className="max-w-5xl mx-auto w-full grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5 pt-6 sm:pt-8 border-t border-zinc-200/80 dark:border-zinc-800/60">
+        <div className="p-4 sm:p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
           <div className="w-9 h-9 rounded-xl bg-zinc-100 text-amber-600 dark:bg-zinc-900 dark:text-amber-400 flex items-center justify-center">
             <Clock className="w-5 h-5" />
           </div>
@@ -40,7 +40,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
+        <div className="p-4 sm:p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
           <div className="w-9 h-9 rounded-xl bg-zinc-100 text-emerald-600 dark:bg-zinc-900 dark:text-emerald-400 flex items-center justify-center">
             <Zap className="w-5 h-5" />
           </div>
@@ -52,7 +52,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
+        <div className="p-4 sm:p-5 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/60 space-y-2">
           <div className="w-9 h-9 rounded-xl bg-zinc-100 text-indigo-600 dark:bg-zinc-900 dark:text-indigo-400 flex items-center justify-center">
             <ShieldCheck className="w-5 h-5" />
           </div>

@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 export const ADMIN_COOKIE_NAME = 'upton_admin_session';
 
 const DEFAULT_ADMIN_USER = 'tony';
-const DEFAULT_ADMIN_PASS = 'wirsumatmo123';
+const DEFAULT_ADMIN_PASS = 'Upton@2026';
 
 // Salt for password hashing
 const PASSWORD_SALT = 'upton_auth_salt_tony_2026';

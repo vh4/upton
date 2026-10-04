@@ -109,7 +109,7 @@ export default function ManageFilePage() {
   const expStatus = formatExpirationStatus(file.expires_at);
 
   return (
-    <div className="max-w-xl mx-auto w-full px-4 py-12 space-y-6">
+    <div className="max-w-xl mx-auto w-full px-3 sm:px-4 py-8 sm:py-12 space-y-4 sm:space-y-6">
       <Link
         href={`/f/${id}`}
         className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
@@ -118,13 +118,13 @@ export default function ManageFilePage() {
         <span>Back to File Viewer</span>
       </Link>
 
-      <div className="rounded-2xl glass-panel p-6 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-zinc-200 dark:border-zinc-800">
-          <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
-            <ShieldAlert className="w-5 h-5" />
+      <div className="rounded-2xl glass-panel p-4 sm:p-6 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-4 sm:space-y-6">
+        <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            <h1 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
               Manage / Delete File
             </h1>
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
@@ -134,16 +134,16 @@ export default function ManageFilePage() {
         </div>
 
         {/* File Details Summary */}
-        <div className="p-4 rounded-xl bg-zinc-100/70 border border-zinc-200 dark:bg-zinc-900/60 dark:border-zinc-800/80 text-xs space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-zinc-500 dark:text-zinc-400">File Name:</span>
-            <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[260px]">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-zinc-100/70 border border-zinc-200 dark:bg-zinc-900/60 dark:border-zinc-800/80 text-xs space-y-2">
+          <div className="flex justify-between items-center gap-2">
+            <span className="text-zinc-500 dark:text-zinc-400 shrink-0">File Name:</span>
+            <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[180px] sm:max-w-[260px]">
               {file.original_name}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-zinc-500 dark:text-zinc-400">Size:</span>
-            <span className="text-zinc-700 dark:text-zinc-300">{formatBytes(file.file_size)}</span>
+            <span className="text-zinc-700 dark:text-zinc-300 font-mono">{formatBytes(file.file_size)}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-zinc-500 dark:text-zinc-400">Expiration:</span>
@@ -154,12 +154,12 @@ export default function ManageFilePage() {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-zinc-500 dark:text-zinc-400">Downloads:</span>
-            <span className="text-zinc-700 dark:text-zinc-300">{file.download_count}</span>
+            <span className="text-zinc-700 dark:text-zinc-300 font-mono">{file.download_count}</span>
           </div>
         </div>
 
         {/* Delete Token Form */}
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
             Delete Token
           </label>
@@ -170,16 +170,16 @@ export default function ManageFilePage() {
             placeholder="Paste your delete token..."
             className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-zinc-300 text-xs font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-rose-500 dark:bg-zinc-950 dark:border-zinc-700 dark:text-zinc-200"
           />
-          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
             This token was issued when the file was uploaded. Deleting this file will permanently purge it from disk and database immediately.
           </p>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <Link
             href={`/f/${id}`}
-            className="text-xs text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 flex items-center gap-1 font-medium"
+            className="text-xs text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 flex items-center justify-center sm:justify-start gap-1 font-medium py-1"
           >
             <span>View Public Page</span>
             <ExternalLink className="w-3 h-3" />
@@ -189,7 +189,7 @@ export default function ManageFilePage() {
             type="button"
             onClick={handleDelete}
             disabled={isDeleting || !token.trim()}
-            className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center gap-2 transition-all disabled:opacity-50"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 min-h-[42px] touch-manipulation"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>{isDeleting ? 'Deleting...' : 'Delete Permanently'}</span>
