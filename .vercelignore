@@ -1,5 +1,6 @@
 .env
 .env.local
 .env.*.local
-file/
+/file/
+/file/*
 tests/

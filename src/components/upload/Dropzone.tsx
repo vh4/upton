@@ -89,51 +89,228 @@ export function Dropzone() {
     setQueuedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
+  const uploadWithXhr = (
+    url: string,
+    file: File,
+    onProgress: (percent: number) => void
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', url);
+      xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && e.total > 0) {
+          const percent = Math.min(99, Math.round((e.loaded / e.total) * 100));
+          onProgress(percent);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          onProgress(100);
+          resolve();
+        } else {
+          reject(
+            new Error(
+              `Storage upload failed (${xhr.status}): ${xhr.statusText || 'Error uploading file'}`
+            )
+          );
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network connection error while uploading to storage.'));
+      };
+
+      xhr.ontimeout = () => {
+        reject(new Error('Upload timed out. Please check your internet connection.'));
+      };
+
+      xhr.send(file);
+    });
+  };
+
   const handleUpload = async () => {
     if (queuedFiles.length === 0 || isUploading) return;
 
     setIsUploading(true);
-    setOverallProgress(10);
+    setOverallProgress(5);
 
     try {
-      const formData = new FormData();
-      formData.append('expirationPreset', expiration.preset);
-      if (expiration.customValue) {
-        formData.append('customValue', expiration.customValue.toString());
-      }
-      if (expiration.customUnit) {
-        formData.append('customUnit', expiration.customUnit);
-      }
+      const results: UploadedFileResponse[] = [];
 
-      queuedFiles.forEach((item) => {
-        formData.append('files', item.file);
-      });
-
-      // Update file statuses to uploading
-      setQueuedFiles((prev) =>
-        prev.map((f) => ({ ...f, status: 'uploading', progress: 35 }))
-      );
-      setOverallProgress(40);
-
-      // Perform upload request with XMLHttpRequest to track upload progress if needed,
-      // or fetch with simulated smooth progression
-      const res = await fetch('/api/upload', {
+      // Check if direct upload is supported by querying /api/upload/direct-init for the first file
+      const first = queuedFiles[0];
+      const testInitRes = await fetch('/api/upload/direct-init', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: first.file.name,
+          fileType: first.file.type || 'application/octet-stream',
+          fileSize: first.file.size,
+          expirationPreset: expiration.preset,
+          customValue: expiration.customValue,
+          customUnit: expiration.customUnit,
+        }),
       });
 
-      setQueuedFiles((prev) =>
-        prev.map((f) => ({ ...f, progress: 90 }))
-      );
-      setOverallProgress(90);
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Upload failed.');
+      const testInitText = await testInitRes.text();
+      let testInitData: any = null;
+      try {
+        testInitData = JSON.parse(testInitText);
+      } catch {
+        testInitData = null;
       }
 
-      const results: UploadedFileResponse[] = data.files;
+      const isSupabaseDirect =
+        testInitRes.ok && testInitData && testInitData.mode === 'supabase';
+
+      if (isSupabaseDirect) {
+        // DIRECT UPLOAD TO SUPABASE STORAGE (Bypasses Vercel 4.5MB serverless limit)
+        for (let i = 0; i < queuedFiles.length; i++) {
+          const item = queuedFiles[i];
+
+          setQueuedFiles((prev) =>
+            prev.map((f) =>
+              f.id === item.id ? { ...f, status: 'uploading', progress: 5 } : f
+            )
+          );
+
+          // 1. Get signed upload URL
+          let initData = i === 0 ? testInitData : null;
+          if (!initData || !initData.uploadUrl) {
+            const initRes = await fetch('/api/upload/direct-init', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                filename: item.file.name,
+                fileType: item.file.type || 'application/octet-stream',
+                fileSize: item.file.size,
+                expirationPreset: expiration.preset,
+                customValue: expiration.customValue,
+                customUnit: expiration.customUnit,
+              }),
+            });
+
+            const initText = await initRes.text();
+            try {
+              initData = JSON.parse(initText);
+            } catch {
+              throw new Error(
+                `Gagal inisialisasi upload (${initRes.status}): ${initText.slice(0, 100)}`
+              );
+            }
+
+            if (!initRes.ok || !initData.uploadUrl) {
+              throw new Error(initData.error || 'Gagal menyiapkan URL upload.');
+            }
+          }
+
+          // 2. Upload binary directly to Supabase Storage with progress
+          await uploadWithXhr(initData.uploadUrl, item.file, (percent) => {
+            setQueuedFiles((prev) =>
+              prev.map((f) =>
+                f.id === item.id ? { ...f, progress: percent } : f
+              )
+            );
+            const overall = Math.round(
+              ((i + percent / 100) / queuedFiles.length) * 90
+            );
+            setOverallProgress(overall);
+          });
+
+          // 3. Register file metadata in database
+          const compRes = await fetch('/api/upload/direct-complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileId: initData.fileId,
+              originalName: initData.sanitizedName || item.file.name,
+              storedName: initData.storedName,
+              mimeType: item.file.type || initData.mimeType,
+              fileSize: item.file.size,
+              filePath: initData.filePath,
+              expiresAt: initData.expiresAt,
+              deleteToken: initData.deleteToken,
+            }),
+          });
+
+          const compText = await compRes.text();
+          let compData: any;
+          try {
+            compData = JSON.parse(compText);
+          } catch {
+            throw new Error(
+              `Gagal menyimpan metadata file (${compRes.status}): ${compText.slice(0, 100)}`
+            );
+          }
+
+          if (!compRes.ok || !compData.success) {
+            throw new Error(compData.error || 'Gagal menyelesaikan upload.');
+          }
+
+          results.push(compData);
+
+          setQueuedFiles((prev) =>
+            prev.map((f) =>
+              f.id === item.id ? { ...f, status: 'completed', progress: 100 } : f
+            )
+          );
+        }
+      } else {
+        // LOCAL MULTIPART UPLOAD (Laptop localhost ./file)
+        const formData = new FormData();
+        formData.append('expirationPreset', expiration.preset);
+        if (expiration.customValue) {
+          formData.append('customValue', expiration.customValue.toString());
+        }
+        if (expiration.customUnit) {
+          formData.append('customUnit', expiration.customUnit);
+        }
+
+        queuedFiles.forEach((item) => {
+          formData.append('files', item.file);
+        });
+
+        setQueuedFiles((prev) =>
+          prev.map((f) => ({ ...f, status: 'uploading', progress: 35 }))
+        );
+        setOverallProgress(40);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        setQueuedFiles((prev) => prev.map((f) => ({ ...f, progress: 90 })));
+        setOverallProgress(90);
+
+        const resText = await res.text();
+        let data: any;
+        try {
+          data = JSON.parse(resText);
+        } catch {
+          if (res.status === 413 || resText.includes('Request Entity Too Large')) {
+            throw new Error(
+              'File terlalu besar untuk serverless (Request Entity Too Large). Maksimum upload terlampaui.'
+            );
+          }
+          throw new Error(`Upload error (${res.status}): ${resText.slice(0, 120)}`);
+        }
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Upload failed.');
+        }
+
+        results.push(...data.files);
+
+        setQueuedFiles((prev) =>
+          prev.map((f) => ({ ...f, status: 'completed', progress: 100 }))
+        );
+      }
+
+      setOverallProgress(100);
 
       // Save to local upload history for Dashboard tracking
       results.forEach((item) => {
@@ -149,11 +326,6 @@ export function Dropzone() {
         });
       });
 
-      setQueuedFiles((prev) =>
-        prev.map((f) => ({ ...f, status: 'completed', progress: 100 }))
-      );
-      setOverallProgress(100);
-
       success(`Successfully uploaded ${results.length} file(s)!`);
       setUploadResults(results);
     } catch (err: any) {
@@ -162,7 +334,11 @@ export function Dropzone() {
       error(msg);
 
       setQueuedFiles((prev) =>
-        prev.map((f) => ({ ...f, status: 'error', errorMessage: msg }))
+        prev.map((f) =>
+          f.status !== 'completed'
+            ? { ...f, status: 'error', errorMessage: msg }
+            : f
+        )
       );
     } finally {
       setIsUploading(false);
