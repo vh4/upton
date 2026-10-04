@@ -1,0 +1,325 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import {
+  getLocalUploadHistory,
+  removeLocalUploadHistoryItem,
+  clearLocalUploadHistory,
+} from '@/lib/storage/history';
+import { StoredUploadHistoryItem, PublicFileRecord } from '@/types/file';
+import { formatBytes, truncateFilename } from '@/lib/utils';
+import { formatExpirationStatus } from '@/lib/expiration/calc';
+import { useToast } from '@/components/ui/Toast';
+import {
+  FileImage,
+  FileVideo,
+  Copy,
+  Check,
+  ExternalLink,
+  Download,
+  Trash2,
+  Clock,
+  Upload,
+  RefreshCw,
+  HardDrive,
+  Layers,
+} from 'lucide-react';
+
+export default function DashboardPage() {
+  const { success, error } = useToast();
+  const [historyItems, setHistoryItems] = useState<StoredUploadHistoryItem[]>([]);
+  const [liveFiles, setLiveFiles] = useState<Record<string, PublicFileRecord>>({});
+  const [loading, setLoading] = useState(true);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const fetchLiveStatus = async (items: StoredUploadHistoryItem[]) => {
+    if (items.length === 0) {
+      setLiveFiles({});
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const ids = items.map((x) => x.id);
+      const res = await fetch('/api/files/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.files) {
+        const fileMap: Record<string, PublicFileRecord> = {};
+        data.files.forEach((f: PublicFileRecord) => {
+          fileMap[f.id] = f;
+        });
+        setLiveFiles(fileMap);
+      }
+    } catch (err) {
+      console.warn('Failed to load batch status:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const items = getLocalUploadHistory();
+    setHistoryItems(items);
+    fetchLiveStatus(items);
+  }, []);
+
+  const handleCopy = (url: string, id: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    success('Share link copied to clipboard!');
+    setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  const handleDelete = async (id: string, deleteToken: string) => {
+    if (!confirm('Are you sure you want to permanently delete this file?')) return;
+
+    try {
+      const res = await fetch(`/api/files/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-delete-token': deleteToken,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to delete file.');
+      }
+
+      removeLocalUploadHistoryItem(id);
+      setHistoryItems((prev) => prev.filter((item) => item.id !== id));
+      success('File permanently deleted.');
+    } catch (err: any) {
+      error(err?.message || 'Could not delete file.');
+    }
+  };
+
+  const handleClearAll = () => {
+    if (confirm('Clear your local upload history? (Files will remain until their expiration time)')) {
+      clearLocalUploadHistory();
+      setHistoryItems([]);
+      setLiveFiles({});
+      success('Upload history cleared.');
+    }
+  };
+
+  const totalSize = historyItems.reduce((acc, curr) => acc + curr.file_size, 0);
+
+  return (
+    <div className="max-w-6xl mx-auto w-full px-4 py-8 sm:py-12 space-y-8">
+      {/* Header and Stats */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 light:text-zinc-900">
+            Upload History
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 light:text-zinc-600 mt-1">
+            Files uploaded from this device &amp; browser session
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {historyItems.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              className="px-3.5 py-1.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-medium light:border-zinc-300 light:text-zinc-600 transition-colors"
+            >
+              Clear History
+            </button>
+          )}
+
+          <Link
+            href="/"
+            className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs flex items-center gap-1.5 light:bg-zinc-900 light:text-white transition-all shadow-sm"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>Upload New</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      {historyItems.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200">
+            <span className="text-[11px] text-zinc-500 uppercase font-semibold">Total Uploads</span>
+            <p className="text-xl font-bold text-zinc-100 light:text-zinc-900 mt-1">
+              {historyItems.length}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200">
+            <span className="text-[11px] text-zinc-500 uppercase font-semibold">Storage Volume</span>
+            <p className="text-xl font-bold text-zinc-100 light:text-zinc-900 mt-1">
+              {formatBytes(totalSize)}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200 col-span-2 sm:col-span-1">
+            <span className="text-[11px] text-zinc-500 uppercase font-semibold">Device Storage Mode</span>
+            <p className="text-sm font-semibold text-emerald-400 mt-1">
+              Local Persistent (/file)
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {historyItems.length === 0 && !loading && (
+        <div className="p-12 text-center rounded-3xl glass-panel border border-zinc-800/80 light:border-zinc-200 max-w-lg mx-auto space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center mx-auto light:bg-zinc-100 light:border-zinc-300">
+            <Upload className="w-8 h-8 text-zinc-500" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-zinc-100 light:text-zinc-900">
+              No uploads yet.
+            </h3>
+            <p className="text-xs sm:text-sm text-zinc-400 light:text-zinc-600 mt-1 max-w-xs mx-auto">
+              Upload your first image or video to get started.
+            </p>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs light:bg-zinc-900 light:text-white transition-all shadow-md"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Upload Files</span>
+          </Link>
+        </div>
+      )}
+
+      {/* Table / List */}
+      {historyItems.length > 0 && (
+        <div className="rounded-2xl glass-panel border border-zinc-800/80 light:border-zinc-200 overflow-hidden shadow-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-zinc-900/80 light:bg-zinc-100 border-b border-zinc-800/80 light:border-zinc-200 text-zinc-400 light:text-zinc-600 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th className="py-3 px-4">File Name</th>
+                  <th className="py-3 px-4">Size</th>
+                  <th className="py-3 px-4">Expires</th>
+                  <th className="py-3 px-4 text-center">Downloads</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/60 light:divide-zinc-200">
+                {historyItems.map((item) => {
+                  const live = liveFiles[item.id];
+                  const expStatus = formatExpirationStatus(item.expires_at);
+                  const isImage = item.mime_type.startsWith('image/');
+
+                  return (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-zinc-900/40 light:hover:bg-zinc-50/80 transition-colors"
+                    >
+                      {/* Name + Thumbnail icon */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 light:bg-zinc-200 light:border-zinc-300 flex items-center justify-center shrink-0">
+                            {isImage ? (
+                              <FileImage className="w-4 h-4 text-emerald-400" />
+                            ) : (
+                              <FileVideo className="w-4 h-4 text-purple-400" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <Link
+                              href={`/f/${item.id}`}
+                              className="font-medium text-zinc-200 hover:text-white light:text-zinc-800 light:hover:text-black truncate block max-w-xs"
+                              title={item.original_name}
+                            >
+                              {truncateFilename(item.original_name, 30)}
+                            </Link>
+                            <span className="text-[10px] text-zinc-500 font-mono">
+                              {item.mime_type}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Size */}
+                      <td className="py-3.5 px-4 text-zinc-300 light:text-zinc-700">
+                        {formatBytes(item.file_size)}
+                      </td>
+
+                      {/* Expiration */}
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                            expStatus.badgeVariant === 'permanent'
+                              ? 'bg-blue-500/10 text-blue-400'
+                              : expStatus.badgeVariant === 'warning'
+                              ? 'bg-amber-500/10 text-amber-400'
+                              : expStatus.badgeVariant === 'expired'
+                              ? 'bg-rose-500/10 text-rose-400'
+                              : 'bg-emerald-500/10 text-emerald-400'
+                          }`}
+                        >
+                          <Clock className="w-3 h-3" />
+                          {expStatus.label}
+                        </span>
+                      </td>
+
+                      {/* Downloads */}
+                      <td className="py-3.5 px-4 text-center text-zinc-400 font-mono">
+                        {live?.download_count ?? '—'}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleCopy(item.public_url, item.id)}
+                            title="Copy Public URL"
+                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                          >
+                            {copiedId === item.id ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+
+                          <Link
+                            href={`/f/${item.id}`}
+                            title="View File"
+                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+
+                          <a
+                            href={`/api/files/${item.id}/download`}
+                            title="Download"
+                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                          </a>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(item.id, item.delete_token)}
+                            title="Delete"
+                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-rose-950/60 text-zinc-400 hover:text-rose-400 transition-colors light:bg-zinc-200 light:hover:bg-rose-100 light:hover:text-rose-700"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

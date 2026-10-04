@@ -1,0 +1,40 @@
+{
+  "name": "upton",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Upton - Modern, minimal, premium file upload & sharing service",
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "tsx --test tests/**/*.test.ts",
+    "cleanup": "tsx scripts/cleanup.ts",
+    "db:setup": "tsx scripts/setup-db.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^18.0.5",
+    "lucide-react": "^0.475.0",
+    "next": "16.3.6",
+    "pg": "^8.13.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "^3.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.17.19",
+    "@types/pg": "^8.11.11",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.20.0",
+    "eslint-config-next": "16.3.6",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
