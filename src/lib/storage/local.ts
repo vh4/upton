@@ -4,8 +4,15 @@ import path from 'path';
 import crypto from 'crypto';
 
 export function getUploadBaseDir(): string {
-  const customDir = process.env.UPLOAD_DIR || './file';
-  return path.resolve(process.cwd(), customDir);
+  if (process.env.UPLOAD_DIR) {
+    return path.isAbsolute(process.env.UPLOAD_DIR)
+      ? process.env.UPLOAD_DIR
+      : path.resolve(process.cwd(), process.env.UPLOAD_DIR);
+  }
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return '/tmp/file';
+  }
+  return path.resolve(process.cwd(), './file');
 }
 
 /**
