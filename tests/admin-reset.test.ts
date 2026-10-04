@@ -5,6 +5,8 @@ import {
   getAdminCredentials,
   createAdminToken,
   verifyAdminToken,
+  hashPassword,
+  verifyAdminCredentials,
 } from '../src/lib/admin/auth';
 import { getMaxStorageBytes, formatStoragePercent } from '../src/lib/storage/limits';
 import { saveFile } from '../src/lib/storage';
@@ -16,6 +18,18 @@ test('Admin Auth — Credential & Session Token Verification', () => {
   assert.equal(creds.username, 'tony');
   assert.equal(creds.password, 'wirsumatmo123');
 
+  // 1. Password hashing
+  const hash1 = hashPassword('wirsumatmo123');
+  const hash2 = hashPassword('wirsumatmo123');
+  assert.equal(hash1, hash2);
+  assert.notEqual(hash1, 'wirsumatmo123');
+
+  // 2. Credential verification (timing-safe & hashed)
+  assert.equal(verifyAdminCredentials('tony', 'wirsumatmo123'), true);
+  assert.equal(verifyAdminCredentials('tony', 'wrongpassword'), false);
+  assert.equal(verifyAdminCredentials('hacker', 'wirsumatmo123'), false);
+
+  // 3. AES-256-GCM encrypted token
   const token = createAdminToken('tony');
   assert.ok(token);
 
