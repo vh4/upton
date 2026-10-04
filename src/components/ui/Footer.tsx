@@ -1,15 +1,14 @@
 import React from 'react';
 import { ShieldCheck, HardDrive, Database, Clock } from 'lucide-react';
+import { Logo } from './Logo';
 
 export function Footer() {
   return (
     <footer className="w-full border-t border-zinc-200/80 bg-white/60 dark:border-zinc-800/60 dark:bg-zinc-950/40 mt-auto py-8 transition-colors">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded bg-zinc-200 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 flex items-center justify-center font-bold text-xs">
-            ↑
-          </div>
-          <span className="font-semibold text-zinc-800 dark:text-zinc-200">UPTON</span>
+          <Logo size={20} className="rounded" />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-200">UP-TON</span>
           <span>&copy; {new Date().getFullYear()} Modern File Sharing. Upload. Share. Done.</span>
         </div>
 

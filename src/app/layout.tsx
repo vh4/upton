@@ -6,12 +6,18 @@ import { Navbar } from '@/components/ui/Navbar';
 import { Footer } from '@/components/ui/Footer';
 
 export const metadata: Metadata = {
-  title: 'UPTON — Minimal, Fast & Ephemeral File Sharing',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: 'UP-TON — Minimal, Fast & Ephemeral File Sharing',
   description:
-    'Simple, beautiful, and secure file sharing for images and videos with configurable expiration and local storage.',
-  keywords: ['file sharing', 'temporary files', 'upfile', 'upton', 'catbox', 'image upload', 'video upload'],
+    'Simple, beautiful, and secure file sharing for images and videos with configurable expiration and hybrid storage.',
+  keywords: ['file sharing', 'temporary files', 'upfile', 'up-ton', 'upton', 'catbox', 'image upload', 'video upload'],
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   openGraph: {
-    title: 'UPTON — Minimal, Fast & Ephemeral File Sharing',
+    title: 'UP-TON — Minimal, Fast & Ephemeral File Sharing',
     description: 'Upload images and videos. Share them instantly. Choose exactly when they disappear.',
     type: 'website',
   },

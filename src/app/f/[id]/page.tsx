@@ -17,16 +17,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!record || record.status !== 'active') {
     return {
-      title: 'File Not Found — Upton',
+      title: 'File Not Found — UP-TON',
     };
   }
 
   return {
-    title: `${record.original_name} — Upton`,
-    description: `View and download ${record.original_name} on Upton file sharing.`,
+    title: `${record.original_name} — UP-TON`,
+    description: `View and download ${record.original_name} on UP-TON file sharing.`,
     openGraph: {
       title: record.original_name,
-      description: `Shared on Upton`,
+      description: `Shared on UP-TON`,
       images: record.mime_type.startsWith('image/')
         ? [`/api/files/${record.id}/raw`]
         : undefined,

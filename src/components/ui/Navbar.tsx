@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Github } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { Logo } from './Logo';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -14,12 +15,10 @@ export function Navbar() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
-            ↑
-          </div>
+          <Logo size={34} className="group-hover:scale-105 transition-transform drop-shadow-sm" />
           <div className="flex flex-col">
             <span className="font-extrabold tracking-wider text-base text-zinc-900 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
-              UPTON
+              UP-TON
             </span>
             <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono -mt-1">
               File Share
