@@ -189,8 +189,8 @@ export function Dropzone() {
         onClick={() => !isUploading && fileInputRef.current?.click()}
         className={`relative cursor-pointer rounded-3xl p-8 sm:p-12 text-center transition-all duration-300 border-2 border-dashed ${
           isDragOver
-            ? 'border-zinc-200 bg-zinc-900/90 scale-[1.01] shadow-2xl light:border-zinc-800 light:bg-zinc-100'
-            : 'border-zinc-800/90 bg-zinc-950/60 hover:border-zinc-700 hover:bg-zinc-900/40 light:border-zinc-300 light:bg-white light:hover:border-zinc-400'
+            ? 'border-zinc-900 bg-zinc-100 scale-[1.01] shadow-2xl dark:border-zinc-200 dark:bg-zinc-900/90'
+            : 'border-zinc-300 bg-white hover:border-zinc-400 hover:bg-zinc-50/60 dark:border-zinc-800/90 dark:bg-zinc-950/60 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/40'
         } glass-panel`}
       >
         <input
@@ -204,30 +204,30 @@ export function Dropzone() {
         />
 
         {/* Upload Icon with subtle pulse */}
-        <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform light:bg-zinc-100 light:border-zinc-300 shadow-inner">
-          <Upload className="w-8 h-8 text-zinc-300 light:text-zinc-700" />
+        <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-zinc-100 border border-zinc-200 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform dark:bg-zinc-900 dark:border-zinc-800 shadow-inner">
+          <Upload className="w-8 h-8 text-zinc-700 dark:text-zinc-300" />
         </div>
 
-        <h3 className="text-lg sm:text-xl font-bold text-zinc-100 light:text-zinc-900">
+        <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
           Drop your files here
         </h3>
-        <p className="text-xs sm:text-sm text-zinc-400 light:text-zinc-600 mt-1">
-          or <span className="text-zinc-100 font-semibold underline underline-offset-4 light:text-zinc-900">click to browse</span> from your device
+        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+          or <span className="text-zinc-900 font-semibold underline underline-offset-4 dark:text-zinc-100">click to browse</span> from your device
         </p>
 
         {/* Format Badges */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-900/90 text-zinc-300 border border-zinc-800 light:bg-zinc-100 light:text-zinc-700 light:border-zinc-200">
-            <FileImage className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-900/90 dark:text-zinc-300 dark:border-zinc-800">
+            <FileImage className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             Images (JPG, PNG, GIF, WEBP, AVIF, SVG)
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-900/90 text-zinc-300 border border-zinc-800 light:bg-zinc-100 light:text-zinc-700 light:border-zinc-200">
-            <FileVideo className="w-3.5 h-3.5 text-purple-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-900/90 dark:text-zinc-300 dark:border-zinc-800">
+            <FileVideo className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             Videos (MP4, WEBM, MOV, MKV)
           </span>
         </div>
 
-        <p className="text-[11px] text-zinc-500 light:text-zinc-500 mt-3">
+        <p className="text-[11px] text-zinc-500 mt-3">
           Maximum file size: {maxMb} MB &middot; Multiple files supported
         </p>
       </div>
@@ -240,7 +240,7 @@ export function Dropzone() {
       />
 
       {/* Expiration Configuration */}
-      <div className="rounded-2xl glass-panel p-5 border border-zinc-800/80 light:border-zinc-300">
+      <div className="rounded-2xl glass-panel p-5 border border-zinc-200 dark:border-zinc-800/80">
         <ExpirationPicker value={expiration} onChange={setExpiration} />
       </div>
 
@@ -252,13 +252,13 @@ export function Dropzone() {
           disabled={isUploading}
           className={`w-full py-3.5 px-6 rounded-2xl font-bold text-sm transition-all duration-200 shadow-xl flex items-center justify-center gap-2 ${
             isUploading
-              ? 'bg-zinc-800 text-zinc-400 cursor-not-allowed'
-              : 'bg-zinc-100 hover:bg-white text-zinc-950 hover:shadow-zinc-200/10 light:bg-zinc-900 light:hover:bg-black light:text-white active:scale-[0.99]'
+              ? 'bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 cursor-not-allowed'
+              : 'bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 active:scale-[0.99]'
           }`}
         >
           {isUploading ? (
             <>
-              <div className="w-4 h-4 border-2 border-zinc-400 border-t-zinc-100 rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-zinc-400 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin" />
               <span>Uploading {queuedFiles.length} file(s)... {overallProgress}%</span>
             </>
           ) : (

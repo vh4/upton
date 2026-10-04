@@ -116,10 +116,10 @@ export default function DashboardPage() {
       {/* Header and Stats */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 light:text-zinc-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100">
             Upload History
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 light:text-zinc-600 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Files uploaded from this device &amp; browser session
           </p>
         </div>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
           {historyItems.length > 0 && (
             <button
               onClick={handleClearAll}
-              className="px-3.5 py-1.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-medium light:border-zinc-300 light:text-zinc-600 transition-colors"
+              className="px-3.5 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 text-xs font-medium transition-colors"
             >
               Clear History
             </button>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
 
           <Link
             href="/"
-            className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs flex items-center gap-1.5 light:bg-zinc-900 light:text-white transition-all shadow-sm"
+            className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Upload New</span>
@@ -147,21 +147,21 @@ export default function DashboardPage() {
       {/* Summary Cards */}
       {historyItems.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200">
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/70">
             <span className="text-[11px] text-zinc-500 uppercase font-semibold">Total Uploads</span>
-            <p className="text-xl font-bold text-zinc-100 light:text-zinc-900 mt-1">
+            <p className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mt-1">
               {historyItems.length}
             </p>
           </div>
-          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200">
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/70">
             <span className="text-[11px] text-zinc-500 uppercase font-semibold">Storage Volume</span>
-            <p className="text-xl font-bold text-zinc-100 light:text-zinc-900 mt-1">
+            <p className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mt-1">
               {formatBytes(totalSize)}
             </p>
           </div>
-          <div className="p-4 rounded-2xl glass-panel border border-zinc-800/70 light:border-zinc-200 col-span-2 sm:col-span-1">
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/70 col-span-2 sm:col-span-1">
             <span className="text-[11px] text-zinc-500 uppercase font-semibold">Device Storage Mode</span>
-            <p className="text-sm font-semibold text-emerald-400 mt-1">
+            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
               Local Persistent (/file)
             </p>
           </div>
@@ -170,21 +170,21 @@ export default function DashboardPage() {
 
       {/* Empty State */}
       {historyItems.length === 0 && !loading && (
-        <div className="p-12 text-center rounded-3xl glass-panel border border-zinc-800/80 light:border-zinc-200 max-w-lg mx-auto space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center mx-auto light:bg-zinc-100 light:border-zinc-300">
-            <Upload className="w-8 h-8 text-zinc-500" />
+        <div className="p-12 text-center rounded-3xl glass-panel border border-zinc-200 dark:border-zinc-800/80 max-w-lg mx-auto space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-zinc-100 border border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 text-zinc-500 flex items-center justify-center mx-auto">
+            <Upload className="w-8 h-8 text-zinc-400" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-zinc-100 light:text-zinc-900">
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
               No uploads yet.
             </h3>
-            <p className="text-xs sm:text-sm text-zinc-400 light:text-zinc-600 mt-1 max-w-xs mx-auto">
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1 max-w-xs mx-auto">
               Upload your first image or video to get started.
             </p>
           </div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs light:bg-zinc-900 light:text-white transition-all shadow-md"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-bold text-xs transition-all shadow-md"
           >
             <Upload className="w-4 h-4" />
             <span>Upload Files</span>
@@ -194,10 +194,10 @@ export default function DashboardPage() {
 
       {/* Table / List */}
       {historyItems.length > 0 && (
-        <div className="rounded-2xl glass-panel border border-zinc-800/80 light:border-zinc-200 overflow-hidden shadow-xl">
+        <div className="rounded-2xl glass-panel border border-zinc-200 dark:border-zinc-800/80 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-900/80 light:bg-zinc-100 border-b border-zinc-800/80 light:border-zinc-200 text-zinc-400 light:text-zinc-600 uppercase tracking-wider font-semibold">
+              <thead className="bg-zinc-100 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th className="py-3 px-4">File Name</th>
                   <th className="py-3 px-4">Size</th>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60 light:divide-zinc-200">
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800/60">
                 {historyItems.map((item) => {
                   const live = liveFiles[item.id];
                   const expStatus = formatExpirationStatus(item.expires_at);
@@ -215,22 +215,22 @@ export default function DashboardPage() {
                   return (
                     <tr
                       key={item.id}
-                      className="hover:bg-zinc-900/40 light:hover:bg-zinc-50/80 transition-colors"
+                      className="hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors"
                     >
                       {/* Name + Thumbnail icon */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 light:bg-zinc-200 light:border-zinc-300 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 flex items-center justify-center shrink-0">
                             {isImage ? (
-                              <FileImage className="w-4 h-4 text-emerald-400" />
+                              <FileImage className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                             ) : (
-                              <FileVideo className="w-4 h-4 text-purple-400" />
+                              <FileVideo className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                             )}
                           </div>
                           <div className="min-w-0">
                             <Link
                               href={`/f/${item.id}`}
-                              className="font-medium text-zinc-200 hover:text-white light:text-zinc-800 light:hover:text-black truncate block max-w-xs"
+                              className="font-medium text-zinc-900 hover:text-black dark:text-zinc-200 dark:hover:text-white truncate block max-w-xs"
                               title={item.original_name}
                             >
                               {truncateFilename(item.original_name, 30)}
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                       </td>
 
                       {/* Size */}
-                      <td className="py-3.5 px-4 text-zinc-300 light:text-zinc-700">
+                      <td className="py-3.5 px-4 text-zinc-700 dark:text-zinc-300">
                         {formatBytes(item.file_size)}
                       </td>
 
@@ -252,12 +252,12 @@ export default function DashboardPage() {
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${
                             expStatus.badgeVariant === 'permanent'
-                              ? 'bg-blue-500/10 text-blue-400'
+                              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                               : expStatus.badgeVariant === 'warning'
-                              ? 'bg-amber-500/10 text-amber-400'
+                              ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                               : expStatus.badgeVariant === 'expired'
-                              ? 'bg-rose-500/10 text-rose-400'
-                              : 'bg-emerald-500/10 text-emerald-400'
+                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                              : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                           }`}
                         >
                           <Clock className="w-3 h-3" />
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                       </td>
 
                       {/* Downloads */}
-                      <td className="py-3.5 px-4 text-center text-zinc-400 font-mono">
+                      <td className="py-3.5 px-4 text-center text-zinc-600 dark:text-zinc-400 font-mono">
                         {live?.download_count ?? '—'}
                       </td>
 
@@ -277,10 +277,10 @@ export default function DashboardPage() {
                             type="button"
                             onClick={() => handleCopy(item.public_url, item.id)}
                             title="Copy Public URL"
-                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white transition-colors"
                           >
                             {copiedId === item.id ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                             ) : (
                               <Copy className="w-3.5 h-3.5" />
                             )}
@@ -289,7 +289,7 @@ export default function DashboardPage() {
                           <Link
                             href={`/f/${item.id}`}
                             title="View File"
-                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white transition-colors"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Link>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
                           <a
                             href={`/api/files/${item.id}/download`}
                             title="Download"
-                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors light:bg-zinc-200 light:hover:bg-zinc-300 light:text-zinc-700"
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:hover:text-white transition-colors"
                           >
                             <Download className="w-3.5 h-3.5" />
                           </a>
@@ -306,7 +306,7 @@ export default function DashboardPage() {
                             type="button"
                             onClick={() => handleDelete(item.id, item.delete_token)}
                             title="Delete"
-                            className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-rose-950/60 text-zinc-400 hover:text-rose-400 transition-colors light:bg-zinc-200 light:hover:bg-rose-100 light:hover:text-rose-700"
+                            className="p-1.5 rounded-lg bg-zinc-100 hover:bg-rose-50 text-zinc-600 hover:text-rose-600 dark:bg-zinc-800/80 dark:hover:bg-rose-950/60 dark:text-zinc-400 dark:hover:text-rose-400 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

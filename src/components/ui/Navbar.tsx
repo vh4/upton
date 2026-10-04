@@ -3,22 +3,22 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowUpRight, HardDrive, Layers, Github } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
 export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-md light:border-zinc-200 light:bg-white/80">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 bg-white/80 dark:border-zinc-800/80 dark:bg-zinc-950/70 backdrop-blur-md transition-colors duration-150">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform light:bg-zinc-900 light:text-white">
+          <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
             ↑
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold tracking-wider text-base text-zinc-100 light:text-zinc-900 group-hover:text-white transition-colors">
+            <span className="font-extrabold tracking-wider text-base text-zinc-900 dark:text-zinc-100 group-hover:text-black dark:group-hover:text-white transition-colors">
               UPTON
             </span>
             <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono -mt-1">
@@ -33,8 +33,8 @@ export function Navbar() {
             href="/"
             className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
               pathname === '/'
-                ? 'bg-zinc-800/80 text-white light:bg-zinc-200 light:text-zinc-900'
-                : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/40 light:text-zinc-600 light:hover:text-zinc-900'
+                ? 'bg-zinc-200/80 text-zinc-900 dark:bg-zinc-800/80 dark:text-white font-semibold'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40'
             }`}
           >
             Upload
@@ -44,14 +44,14 @@ export function Navbar() {
             href="/dashboard"
             className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
               pathname === '/dashboard'
-                ? 'bg-zinc-800/80 text-white light:bg-zinc-200 light:text-zinc-900'
-                : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/40 light:text-zinc-600 light:hover:text-zinc-900'
+                ? 'bg-zinc-200/80 text-zinc-900 dark:bg-zinc-800/80 dark:text-white font-semibold'
+                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40'
             }`}
           >
             Dashboard
           </Link>
 
-          <div className="h-4 w-[1px] bg-zinc-800 light:bg-zinc-300 mx-1 sm:mx-2" />
+          <div className="h-4 w-[1px] bg-zinc-300 dark:bg-zinc-800 mx-1 sm:mx-2" />
 
           {/* Theme Switcher */}
           <ThemeToggle />
@@ -62,7 +62,7 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             title="GitHub Repository"
-            className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/40 transition-colors light:text-zinc-600 light:hover:text-zinc-900"
+            className="p-2 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/40 transition-colors"
           >
             <Github className="w-4 h-4" />
           </a>

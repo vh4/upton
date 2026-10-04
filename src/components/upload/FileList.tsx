@@ -24,7 +24,7 @@ export function FileList({ files, onRemove, isUploading }: FileListProps) {
 
   return (
     <div className="w-full space-y-2 mt-4">
-      <div className="flex items-center justify-between text-xs text-zinc-400 light:text-zinc-600 px-1">
+      <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 px-1 font-medium">
         <span>Selected Files ({files.length})</span>
         <span>
           Total:{' '}
@@ -41,25 +41,25 @@ export function FileList({ files, onRemove, isUploading }: FileListProps) {
           return (
             <div
               key={item.id}
-              className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 light:bg-zinc-100/90 light:border-zinc-200/90 flex flex-col gap-2 transition-all"
+              className="p-3 rounded-xl bg-zinc-100/90 border border-zinc-200/90 dark:bg-zinc-900/60 dark:border-zinc-800/80 flex flex-col gap-2 transition-all"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800 light:bg-zinc-200 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center shrink-0">
                     {isImage ? (
-                      <FileImage className="w-4 h-4 text-emerald-400 light:text-emerald-600" />
+                      <FileImage className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     ) : (
-                      <FileVideo className="w-4 h-4 text-purple-400 light:text-purple-600" />
+                      <FileVideo className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     )}
                   </div>
                   <div className="min-w-0">
                     <p
-                      className="text-xs font-medium text-zinc-200 light:text-zinc-900 truncate"
+                      className="text-xs font-semibold text-zinc-900 dark:text-zinc-200 truncate"
                       title={item.file.name}
                     >
                       {truncateFilename(item.file.name, 40)}
                     </p>
-                    <p className="text-[11px] text-zinc-500 light:text-zinc-500">
+                    <p className="text-[11px] text-zinc-500">
                       {formatBytes(item.file.size)} &middot;{' '}
                       {item.file.type || 'Unknown'}
                     </p>
@@ -68,22 +68,22 @@ export function FileList({ files, onRemove, isUploading }: FileListProps) {
 
                 <div className="flex items-center gap-2 shrink-0">
                   {item.status === 'uploading' && (
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-300" />
+                    <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-700 dark:text-zinc-300" />
                       {item.progress}%
                     </span>
                   )}
                   {item.status === 'completed' && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   )}
                   {item.status === 'error' && (
-                    <AlertCircle className="w-4 h-4 text-rose-400" />
+                    <AlertCircle className="w-4 h-4 text-rose-500" />
                   )}
                   {!isUploading && item.status === 'idle' && (
                     <button
                       type="button"
                       onClick={() => onRemove(item.id)}
-                      className="p-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 light:hover:text-zinc-800 light:hover:bg-zinc-200 transition-colors"
+                      className="p-1 rounded-md text-zinc-400 hover:text-zinc-700 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                       title="Remove file"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -94,9 +94,9 @@ export function FileList({ files, onRemove, isUploading }: FileListProps) {
 
               {/* Progress bar during upload */}
               {item.status === 'uploading' && (
-                <div className="w-full bg-zinc-800 light:bg-zinc-200 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-zinc-100 light:bg-zinc-900 h-full rounded-full transition-all duration-200"
+                    className="bg-zinc-900 dark:bg-zinc-100 h-full rounded-full transition-all duration-200"
                     style={{ width: `${item.progress}%` }}
                   />
                 </div>
@@ -104,7 +104,7 @@ export function FileList({ files, onRemove, isUploading }: FileListProps) {
 
               {/* Error feedback */}
               {item.status === 'error' && item.errorMessage && (
-                <p className="text-[11px] text-rose-400">
+                <p className="text-[11px] text-rose-500 font-medium">
                   {item.errorMessage}
                 </p>
               )}

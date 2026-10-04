@@ -58,8 +58,8 @@ export function ExpirationPicker({ value, onChange }: ExpirationPickerProps) {
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 light:text-zinc-600 flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5 text-zinc-400" />
+        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-400 flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
           Expiration Time
         </label>
         <span className="text-[11px] text-zinc-500">
@@ -78,8 +78,8 @@ export function ExpirationPicker({ value, onChange }: ExpirationPickerProps) {
               onClick={() => handlePresetSelect(p.id)}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-center border flex items-center justify-center gap-1 ${
                 isSelected
-                  ? 'bg-zinc-100 text-zinc-950 border-zinc-200 font-semibold shadow-sm light:bg-zinc-900 light:text-white light:border-zinc-800'
-                  : 'bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:bg-zinc-800/60 hover:text-zinc-200 light:bg-zinc-100 light:text-zinc-600 light:border-zinc-200 light:hover:bg-zinc-200/70'
+                  ? 'bg-zinc-900 text-white border-zinc-900 font-semibold shadow-sm dark:bg-zinc-100 dark:text-zinc-950 dark:border-zinc-200'
+                  : 'bg-zinc-100 text-zinc-700 border-zinc-200/90 hover:bg-zinc-200/70 hover:text-zinc-900 dark:bg-zinc-900/60 dark:text-zinc-400 dark:border-zinc-800/80 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200'
               }`}
             >
               {p.id === 'permanent' && <InfinityIcon className="w-3 h-3 shrink-0" />}
@@ -91,20 +91,20 @@ export function ExpirationPicker({ value, onChange }: ExpirationPickerProps) {
 
       {/* Custom Duration Controls */}
       {value.preset === 'custom' && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-zinc-900/80 border border-zinc-800 light:bg-zinc-100 light:border-zinc-200 animate-in fade-in duration-150">
-          <span className="text-xs text-zinc-400 light:text-zinc-600">Delete after:</span>
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-zinc-100 border border-zinc-200 dark:bg-zinc-900/80 dark:border-zinc-800 animate-in fade-in duration-150">
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">Delete after:</span>
           <input
             type="number"
             min={1}
             max={9999}
             value={value.customValue ?? 5}
             onChange={handleCustomValueChange}
-            className="w-20 px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 text-center focus:outline-none focus:ring-1 focus:ring-zinc-400 light:bg-white light:border-zinc-300 light:text-zinc-900"
+            className="w-20 px-2.5 py-1 rounded-lg bg-white border border-zinc-300 text-sm text-zinc-900 text-center focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:bg-zinc-950 dark:border-zinc-700 dark:text-zinc-100 dark:focus:ring-zinc-400"
           />
           <select
             value={value.customUnit ?? 'hours'}
             onChange={handleCustomUnitChange}
-            className="px-3 py-1 rounded-lg bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400 light:bg-white light:border-zinc-300 light:text-zinc-900"
+            className="px-3 py-1 rounded-lg bg-white border border-zinc-300 text-sm text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:bg-zinc-950 dark:border-zinc-700 dark:text-zinc-100 dark:focus:ring-zinc-400"
           >
             <option value="minutes">Minutes</option>
             <option value="hours">Hours</option>

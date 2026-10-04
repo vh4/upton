@@ -24,24 +24,24 @@ export function ImageViewer({ src, alt }: ImageViewerProps) {
   return (
     <div
       id="upton-image-preview"
-      className="relative w-full rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800/80 light:bg-zinc-100 light:border-zinc-300 flex items-center justify-center p-4 min-h-[300px] max-h-[75vh]"
+      className="relative w-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800/80 flex items-center justify-center p-4 min-h-[300px] max-h-[75vh]"
     >
       {/* Background checker pattern for transparent PNG/SVG/WEBP */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(circle, #fff 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, #888 1px, transparent 1px)`,
           backgroundSize: '16px 16px',
         }}
       />
 
       {/* Floating View Controls */}
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/80 backdrop-blur border border-zinc-800 light:bg-white/80 light:border-zinc-300">
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 p-1 rounded-xl bg-white/90 dark:bg-zinc-900/80 backdrop-blur border border-zinc-300 dark:border-zinc-800 shadow-sm">
         <button
           type="button"
           onClick={() => setIsZoomed(!isZoomed)}
           title={isZoomed ? 'Zoom Out' : 'Zoom In'}
-          className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors light:text-zinc-700 light:hover:bg-zinc-200"
+          className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
         >
           {isZoomed ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
         </button>
@@ -49,7 +49,7 @@ export function ImageViewer({ src, alt }: ImageViewerProps) {
           type="button"
           onClick={toggleFullscreen}
           title="Fullscreen"
-          className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors light:text-zinc-700 light:hover:bg-zinc-200"
+          className="p-1.5 rounded-lg text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
         >
           <Maximize2 className="w-4 h-4" />
         </button>
