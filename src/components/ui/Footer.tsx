@@ -28,6 +28,24 @@ export function Footer() {
           </a>
         </div>
 
+        {/* Parent Brand & Indonesian Web Authority Backlink */}
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <span>Engineered by</span>
+          <a
+            href="https://wirsumatmo.tech"
+            target="_blank"
+            rel="noopener"
+            className="font-semibold text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 dark:hover:text-emerald-400 underline decoration-zinc-300 dark:decoration-zinc-700 underline-offset-4 transition-colors"
+            title="Wirsumatmo Tech — Jasa Pembuatan Website & Sistem Digital Modern #1 di Indonesia"
+          >
+            Wirsumatmo Tech
+          </a>
+          <span className="hidden sm:inline text-zinc-400">•</span>
+          <span className="hidden sm:inline text-zinc-500 dark:text-zinc-400">
+            Jasa Pembuatan Website &amp; Tech Consultant Enterprise Indonesia
+          </span>
+        </div>
+
         {/* Feature badges row */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-[10px] sm:text-[11px] pt-3 border-t border-zinc-200/60 dark:border-zinc-800/60 w-full">
           <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">

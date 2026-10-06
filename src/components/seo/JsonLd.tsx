@@ -38,7 +38,24 @@ export function JsonLd() {
     sameAs: [
       'https://github.com/vh4/upton',
       'https://buymeacoffee.com/fathoniwasl',
+      'https://wirsumatmo.tech',
     ],
+    parentOrganization: {
+      '@type': 'Organization',
+      name: 'Wirsumatmo Tech',
+      alternateName: ['Atmo Tech', 'Atmo Consultant'],
+      url: 'https://wirsumatmo.tech',
+      description:
+        'Jasa Pembuatan Website, Web App, dan Konsultan Teknologi Modern #1 di Indonesia.',
+      founder: {
+        '@type': 'Person',
+        name: 'Fathoni Waseso Jati',
+      },
+      sameAs: [
+        'https://github.com/vh4/atmo',
+        'https://wirsumatmo.tech',
+      ],
+    },
   };
 
   const webSiteSchema = {
